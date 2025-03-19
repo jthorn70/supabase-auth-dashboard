@@ -28,10 +28,13 @@ export default function AuthForm({ type }) {
 
         router.push("/dashboard"); // Redirect on successful login
       } else {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        const { error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: "https://supabase-auth-dashboard-iota.vercel.app/update-password",
+            },
+          });
 
         if (error) throw error;
         alert("Check your email to confirm your account.");
