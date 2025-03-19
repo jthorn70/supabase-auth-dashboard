@@ -18,9 +18,7 @@ export default function LoginPage() {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <AuthForm type="login" />
-      <p className="mt-2">
-        <a href="/forgot-password" className="text-blue-500 underline">Forgot your password?</a>
-      </p>
+
 
     </div>
     

@@ -48,26 +48,36 @@ export default function AuthForm({ type }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="border p-2"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        className="border p-2"
-      />
-      {error && <p className="text-red-500">{error}</p>}
-      <button type="submit" className="bg-blue-500 text-white p-2" disabled={loading}>
-        {loading ? "Loading..." : type === "login" ? "Login" : "Sign Up"}
-      </button>
-    </form>
+  <input
+    type="email"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    required
+    className="border p-2 rounded"
+  />
+  <input
+    type="password"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    className="border p-2 rounded"
+  />
+
+  <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+    {loading ? "Loading..." : type === "login" ? "Login" : "Sign Up"}
+  </button>
+
+  {/* Centered Forgot Password Link */}
+  {type === "login" && (
+    <div className="text-center">
+      <a href="/forgot-password" className="text-blue-500 underline">
+        Forgot your password?
+      </a>
+    </div>
+  )}
+</form>
+
   );
 }
