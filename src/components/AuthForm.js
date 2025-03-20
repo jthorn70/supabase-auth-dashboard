@@ -77,12 +77,16 @@ export default function AuthForm({ type }) {
             </Button>
 
             {type === "login" && (
-              <p className="text-center text-sm">
-                <a href="/forgot-password" className="text-blue-500 underline">
-                  Forgot your password?
-                </a>
-              </p>
+                <div className="text-center text-sm mt-2">
+                    <a href="/forgot-password" className="text-blue-500 underline block">
+                    Forgot your password?
+                    </a>
+                    <a href="/signup" className="text-blue-500 underline mt-2 inline-block">
+                    Need an account?
+                    </a>
+                </div>
             )}
+
           </form>
         </CardContent>
       </Card>
