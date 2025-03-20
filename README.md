@@ -11,6 +11,9 @@ This project is a User Authentication Dashboard built using Next.js (App Router)
 - View a protected dashboard after logging in.
 - Log out securely.
 
+🔗 **Try the Live Demo**: [Supabase Auth Dashboard](https://supabase-auth-dashboard-iota.vercel.app)
+
+
 ## 🚀 Features
 
 ### ✅ Authentication
