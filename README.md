@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js + Supabase Authentication Dashboard
 
-## Getting Started
+## 📌 Overview
 
-First, run the development server:
+This project is a User Authentication Dashboard built using Next.js (App Router) and Supabase for authentication. Users can:
+
+- Sign up with Email & Password (with email confirmation).
+- Log in with Email & Password.
+- Log in with Google OAuth.
+- Reset their password if they forget it.
+- View a protected dashboard after logging in.
+- Log out securely.
+
+## 🚀 Features
+
+### ✅ Authentication
+
+- Email & Password Signup/Login (with error handling for existing accounts).
+- Google OAuth Login (sign in with a Google account).
+- Forgot Password Functionality (sends a reset link via email).
+- Session Persistence (users stay logged in after refresh).
+
+### ✅ Protected Routes
+
+- Users cannot access the dashboard unless logged in.
+- Redirects to `/login` if an unauthenticated user tries to access `/dashboard`.
+
+### ✅ UI Enhancements
+
+- Styled using `shadcn/ui` + Tailwind CSS.
+- Responsive authentication forms.
+- Dashboard UI with mock analytics cards & sidebar navigation.
+
+## 🛠 Installation & Setup
+
+### 1️⃣ Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/YOUR_GITHUB_USERNAME/nextjs-supabase-auth.git
+cd nextjs-supabase-auth
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2️⃣ Install Dependencies
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3️⃣ Set Up Environment Variables
 
-## Learn More
+Create a `.env.local` file in the project root and add:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key  # (Used only in server-side API routes)
+NEXT_PUBLIC_SUPABASE_REDIRECT_URL=https://your-vercel-deployment.vercel.app/dashboard
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> **Note:** The `SUPABASE_SERVICE_ROLE_KEY` should never be exposed in the frontend.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4️⃣ Run the Development Server
 
-## Deploy on Vercel
+```bash
+pnpm dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠 Supabase Configuration
+
+### Enable Authentication Providers
+
+1. Go to **Supabase Dashboard → Authentication**.
+2. Enable **Email/Password Authentication**.
+3. Enable **Google OAuth**:
+    - Create credentials in **Google Cloud Console**.
+    - Set the redirect URI to:
+
+      ```
+      https://your-supabase-project.supabase.co/auth/v1/callback
+      ```
+
+    - Paste the Client ID & Secret into Supabase Google Provider Settings.
+
+### Database Setup
+
+#### Profiles Table (Automatically Created on Signup)
+
+Run this SQL in Supabase SQL Editor:
+
+```sql
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE,
+  avatar_url TEXT
+);
+```
+
+#### Auto-Create Profile on Signup
+
+```sql
+CREATE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION public.handle_new_user();
+```
+
+## 🚀 Deployment to Vercel
+
+1. Push code to GitHub:
+
+    ```bash
+    git add .
+    git commit -m "Initial commit"
+    git push origin main
+    ```
+
+2. Go to **Vercel → New Project → Import your GitHub repo**.
+3. Set Environment Variables in **Vercel → Settings**.
+4. Deploy! 🚀
+
+## 🎯 Next Steps
+
+- 🎨 Improve dashboard UI with user profile updates.
+- 🔄 Add real-time database updates with Supabase subscriptions.
+- 📊 Fetch real analytics data instead of mock cards.
+
+## 📄 License
+
+This project is licensed under the MIT License.
