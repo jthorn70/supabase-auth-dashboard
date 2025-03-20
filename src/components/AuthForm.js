@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AuthForm({ type }) {
   const [email, setEmail] = useState("");
@@ -14,27 +17,27 @@ export default function AuthForm({ type }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null); // Reset error before new attempt
+    setError(null);
 
     try {
       if (type === "login") {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        // Email/Password Login
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
-        console.log("User logged in:", data);
-
-        router.push("/dashboard"); // Redirect on successful login
+        router.push("/dashboard");
       } else {
+        // Email/Password Sign-Up with Redirect
         const { error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: "https://supabase-auth-dashboard-iota.vercel.app/update-password",
-            },
-          });
+          email,
+          password,
+          options: {
+            emailRedirectTo: "https://your-vercel-deployment.vercel.app/dashboard", // Ensure correct redirect
+          },
+        });
 
         if (error) throw error;
         alert("Check your email to confirm your account.");
@@ -47,37 +50,42 @@ export default function AuthForm({ type }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md mx-auto">
-  <input
-    type="email"
-    placeholder="Email"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    required
-    className="border p-2 rounded"
-  />
-  <input
-    type="password"
-    placeholder="Password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-    className="border p-2 rounded"
-  />
+    <div className="flex justify-center items-center min-h-screen">
+      <Card className="w-[400px] shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-center">{type === "login" ? "Login" : "Sign Up"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Loading..." : type === "login" ? "Login" : "Sign Up"}
+            </Button>
 
-  <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-    {loading ? "Loading..." : type === "login" ? "Login" : "Sign Up"}
-  </button>
-
-  {/* Centered Forgot Password Link */}
-  {type === "login" && (
-    <div className="text-center">
-      <a href="/forgot-password" className="text-blue-500 underline">
-        Forgot your password?
-      </a>
+            {type === "login" && (
+              <p className="text-center text-sm">
+                <a href="/forgot-password" className="text-blue-500 underline">
+                  Forgot your password?
+                </a>
+              </p>
+            )}
+          </form>
+        </CardContent>
+      </Card>
     </div>
-  )}
-</form>
-
   );
 }
