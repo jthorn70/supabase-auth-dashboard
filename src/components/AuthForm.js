@@ -14,6 +14,20 @@ export default function AuthForm({ type }) {
   const [error, setError] = useState(null);
   const router = useRouter();
 
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "https://your-vercel-deployment.vercel.app/dashboard", // Ensure correct redirect
+      },
+    });
+  
+    if (error) {
+      console.error("Google login error:", error.message);
+    }
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -75,6 +89,10 @@ export default function AuthForm({ type }) {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Loading..." : type === "login" ? "Login" : "Sign Up"}
             </Button>
+            <Button type="button" onClick={signInWithGoogle} className="w-full bg-gray-100 text-black">
+                Sign in with Google
+            </Button>
+
 
             {type === "login" && (
                 <div className="text-center text-sm mt-2">
